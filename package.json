@@ -1,0 +1,29 @@
+{
+  "name": "vuttr",
+  "version": "1.0.0",
+  "description": "API e banco de dados para a aplicação VUTTR (Very Useful Tools to Remember). A aplicação é um simples repositório para gerenciar ferramentas com seus respectivos nomes, links, descrições e tags.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/fabiocba/vuttr.git"
+  },
+  "keywords": [
+    "express",
+    "mongodb",
+    "mongoose"
+  ],
+  "author": "Fábio Cruz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fabiocba/vuttr/issues"
+  },
+  "homepage": "https://github.com/fabiocba/vuttr#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "mongoose": "^5.3.11"
+  }
+}
