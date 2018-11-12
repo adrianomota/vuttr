@@ -4,6 +4,7 @@ const toolsCtrl = require("../../controllers/tools-controller");
 
 router.get("/", toolsCtrl.retrieve);
 router.post("/", toolsCtrl.create);
-router.delete("/", toolsCtrl.remove);
+router.put("/:id", toolsCtrl.update);
+router.delete("/:id", toolsCtrl.remove);
 
 module.exports = router;

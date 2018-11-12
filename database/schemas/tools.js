@@ -10,9 +10,9 @@ const Schema = mongoose.Schema;
 
 const toolSchema = new Schema({
     title: {type: String, required: true},
-    link: {type: String, required: true},
-    description:  {type: String, required: true},
-    tags: [{type: String, required: true}],
+    link: {type: String},
+    description: String,
+    tags: [String],
 });
 
 const ToolModel = mongoose.model("Tool", toolSchema, "Tools");

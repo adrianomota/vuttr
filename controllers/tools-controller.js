@@ -1,48 +1,44 @@
 var Tools = require("../database").Tools;
 
+function handleError(res, err, code) {
+    return res.status(code).json({
+        "ERROR": {
+            "error": err.name,
+            "message": err.message
+        }
+    });
+}
+
 module.exports.create = function (req, res) {
     let newTool = new Tools(req.body);
     newTool.save(function (err) {
-        if (err) {
-            res.status(409).json({
-                "ERROR": {
-                    "error": err.name,
-                    "message": err.message
-                }
-            });
-        } else {
-            res.status(200).json(newTool);
-        }
+        if (err) return handleError(res, err, 400);
+        res.status(200).json(newTool);
     });
 };
 
 module.exports.retrieve = function (req, res) {
     let tag = req.query.tag;
-    Tools.find({ tag }, function (err, results) {
-        if (err) {
-            res.status(409).json({
-                "ERROR": {
-                    "error": err.name,
-                    "message": err.message
-                }
-            });
-        } else {
-            res.status(200).json(results);
-        }
+    Tools.find({ tags: tag }, function (err, results) {
+        if (err) return handleError(res, err, 400);
+        res.status(200).json(results);
+    });
+};
+
+module.exports.update = function (req, res) {
+    let tool = req.body;
+    let id = req.params.id;
+    Tools.findOneAndUpdate(id, { $set: tool }, { new: true }, function (err, tool) {
+        if (err) return handleError(res, err, 400);
+        res.status(200).json(tool);
     });
 };
 
 module.exports.remove = function (req, res) {
-    Local.findOneAndRemove({ _id: req.params.id }, function (err, local) {
-        if (err) {
-            res.status(409).json({
-                "ERROR": {
-                    "error": err.name,
-                    "message": err.message
-                }
-            });
-        } else {
-            res.status(200).json({});
-        }
+    let id = req.params.id;
+    console.log(id);
+    Tools.findOneAndRemove(req.params.id, function (err) {
+        if (err) return handleError(res, err, 400);
+        res.status(200).json({});
     });
 };
