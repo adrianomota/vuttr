@@ -16,7 +16,7 @@ module.exports.create = function (req, res) {
     });
 };
 
-module.exports.find = function (req, res) {
+module.exports.retrieve = function (req, res) {
     let tag = req.query.tag;
     Tools.find({ tag }, function (err, results) {
         if (err) {
