@@ -8,6 +8,11 @@ if (process.env.NODE_ENV === "development") {
     url = `${config.host}/${config.database}`
 }
 
+// Desenvolvimento
+if (process.env.NODE_ENV === "test") {
+    url = `${config.host}/${config.database}-test`
+}
+
 // Aperte os cintos, estamos em produção...
 if (process.env.NODE_ENV === "production") {
     url = `${config.host}/${config.database}`

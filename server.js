@@ -10,7 +10,8 @@ app.use(bodyParser.urlencoded({ extended: true }))
 // parse content-type - application/json
 app.use(bodyParser.json())
 
-app.use(logger(':date[web] :method :url :status :response-time ms - :res[content-length]'));
+process.env.NODE_ENV !== "test"
+    && app.use(logger(':date[web] :method :url :status :response-time ms - :res[content-length]'));
 
 // Rotas
 app.use("/", require("./router")(app));
@@ -19,3 +20,5 @@ app.use("/", require("./router")(app));
 app.listen(3000, () => {
     console.log("Servidor escutando na porta 3000");
 });
+
+module.exports = app;

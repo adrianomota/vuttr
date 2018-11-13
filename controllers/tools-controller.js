@@ -1,4 +1,4 @@
-var Tools = require("../database").Tools;
+const Tool = require("../database").Tools;
 
 function handleError(res, err, code) {
     return res.status(code).json({
@@ -10,7 +10,7 @@ function handleError(res, err, code) {
 }
 
 module.exports.create = function (req, res) {
-    let newTool = new Tools(req.body);
+    let newTool = new Tool(req.body);
     newTool.save(function (err) {
         if (err) return handleError(res, err, 400);
         res.status(200).json(newTool);
@@ -19,7 +19,7 @@ module.exports.create = function (req, res) {
 
 module.exports.retrieve = function (req, res) {
     let tag = req.query.tag;
-    Tools.find({ tags: tag }, function (err, results) {
+    Tool.find({ tags: tag }, { "__v": false }, function (err, results) {
         if (err) return handleError(res, err, 400);
         res.status(200).json(results);
     });
@@ -28,7 +28,7 @@ module.exports.retrieve = function (req, res) {
 module.exports.update = function (req, res) {
     let tool = req.body;
     let id = req.params.id;
-    Tools.findOneAndUpdate(id, { $set: tool }, { new: true }, function (err, tool) {
+    Tool.findOneAndUpdate(id, { $set: tool }, { new: true }, function (err, tool) {
         if (err) return handleError(res, err, 400);
         res.status(200).json(tool);
     });
@@ -37,7 +37,7 @@ module.exports.update = function (req, res) {
 module.exports.remove = function (req, res) {
     let id = req.params.id;
     console.log(id);
-    Tools.findOneAndRemove(req.params.id, function (err) {
+    Tool.findOneAndRemove(req.params.id, function (err) {
         if (err) return handleError(res, err, 400);
         res.status(200).json({});
     });
