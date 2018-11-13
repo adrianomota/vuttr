@@ -19,7 +19,10 @@ module.exports.create = function (req, res) {
 
 module.exports.retrieve = function (req, res) {
     let tag = req.query.tag;
-    Tool.find({ tags: tag }, { "__v": false }, function (err, results) {
+    let query = {};
+    if (tag)
+        query.tags = tag;
+    Tool.find(query, function (err, results) {
         if (err) return handleError(res, err, 400);
         res.status(200).json(results);
     });

@@ -12,7 +12,16 @@ chai.use(chaiHttp);
 chai.use(chaid);
 
 let tools = [
-    new Tool({
+    {
+        "title": "fake-tool",
+        "link": "<https://fakeaddress.co>",
+        "description": "Fake tool",
+        "tags": [
+            "fake",
+            "github",
+            "rest",
+        ]
+    }, {
         "title": "json-server",
         "link": "<https://github.com/typicode/json-server>",
         "description": "Fake REST API based on a json schema. Useful for mocking and creating APIs for front-end devs to consume in coding challenges.",
@@ -22,9 +31,9 @@ let tools = [
             "schema",
             "node",
             "github",
-            "rest"
+            "rest",
         ]
-    }), new Tool({
+    }, {
         "title": "fastify",
         "link": "<https://www.fastify.io/>",
         "description": "Extremely fast and simple, low-overheadweb framework for NodeJS. Supports HTTP2.",
@@ -36,18 +45,70 @@ let tools = [
             "https",
             "localhost"
         ]
-    })
+    }
 ];
 
-
+/**
+ * Teste dos endpoint da API.
+ * Testes usando a biblioteca chai - permite um codigo semantico, auto-explicativo
+ */
 describe("Tools - API test: ", function () {
     // executa drop da coleçao do banco
-    beforeEach(done => {
-        Tool.countDocuments()
-            .then(count => (count > 0) ? Tool.collection.drop() : Promise.resolve())
-            .then(() => Promise.all(tools.map(t => t.save())))
-            .then(() => done())
-            .catch(done);
+    beforeEach(async function () {
+        let count = await Tool.countDocuments();
+        await ((count > 0) ? Tool.collection.drop() : Promise.resolve());
+        await Tool.create(tools);
+    });
+
+    it("Lista as ferramentas usando GET /tools", done => {
+        chai.request(server)
+            .get("/tools")
+            .end((err, response) => {
+                if (err) return done(err);
+
+                response.should.have.status(200);
+                response.should.be.json;
+                response.body.should.be.an("array").and.have.lengthOf(tools.length)
+
+                // cada ferramenta deve ter uma propriedade id
+                response.body.forEach(tool => {
+                    tool.should.have.all.keys("_id", "title", "description", "link", "tags");
+                    // acha nas variavel de ferramentas salvas a equivalente do resultado
+                    let eqTool = tools.find(u => u.title === tool.title);
+                    // testa se titulos sao iguais
+                    tool.title.should.equal(eqTool.title);
+                    // testa se links sao iguais
+                    tool.link.should.equal(eqTool.link);
+                    // testa se descricoes sao iguais
+                    tool.description.should.equal(eqTool.description);
+                    // testa se tags sao iguais
+                    tool.tags.should.include.members(eqTool.tags);
+                });
+                done();
+            });
+    });
+
+    it("Filtra as ferramentas usando GET /tools", done => {
+        chai.request(server)
+            .get("/tools")
+            .query({ tag: "fake" }) // busca por fake (so inserimos uma ferramenta com essa tag)
+            .end((err, response) => {
+                if (err) return done(err);
+
+                response.should.have.status(200);
+                response.should.be.json;
+                response.body.should.be.an("array").and.have.lengthOf(1)
+
+                // cada ferramenta deve ter todas as propriedades
+                response.body[0].should.have.all.keys("_id", "title", "description", "link", "tags");
+                let eqTool = tools.find(t => t.tags.includes('fake'));
+                response.body[0].title.should.equal(eqTool.title);
+                response.body[0].link.should.equal(eqTool.link);
+                response.body[0].description.should.equal(eqTool.description);
+                response.body[0].tags.should.include.members(eqTool.tags);
+                done();
+            });
+
     });
 
     it("Cadastra uma ferramenta usando POST /tools", done => {
@@ -69,7 +130,6 @@ describe("Tools - API test: ", function () {
             .end((err, response) => {
                 if (err) return done(err);
 
-                console.log(response.status);
                 response.should.have.status(200);
                 response.should.be.json;
                 response.body.should.have.keys("_id", "title", "description", "link", "tags");
@@ -77,16 +137,9 @@ describe("Tools - API test: ", function () {
                 // nova ferramenta deve ter uma propriedade id
                 response.body._id.should.be.an("string");
 
-                // testa valor de 'title'
                 response.body.title.should.equal(newTool.title);
-
-                // testa valor de 'link'
                 response.body.link.should.equal(newTool.link);
-
-                // testa valor de 'description'
                 response.body.description.should.equal(newTool.description);
-
-                // testa valores de 'tags'
                 response.body.tags.should.be.an("array").and.have.lengthOf(newTool.tags.length);
                 response.body.tags[0].should.equal(newTool.tags[0]);
 
@@ -94,80 +147,28 @@ describe("Tools - API test: ", function () {
             });
     });
 
-    it("Lista as ferramentas usando GET /tools", done => {
+    it("Atualiza a descricao de uma ferramenta usando PUT /tools/:id", async done => {
         chai.request(server)
             .get("/tools")
-            .end((err, response) => {
-                if (err) return done(err);
-
+            .then(response => {
                 response.should.have.status(200);
                 response.should.be.json;
-                response.body.should.be.an("array").and.have.lengthOf(tools.length)
-
-                // cada ferramenta deve ter uma propriedade id
-                response.body.should.all.have.keys("_id", "title", "description", "link", "tags");
-                response.body.forEach(t => {
-                    let eqTool = tools.find(u => u.title === t.title);
-                    tool.title.should.equal(eqTool.title);
-                    tool.link.should.equal(eqTool.link);
-                    tool.description.should.equal(eqTool.description);
-                    tool.tags.should.include.members(eqTool.tags);
-                });
-                done();
-            });
-    });
-
-    it("Filtra as ferramentas usando GET /tools", done => {
-        const tag = tools[0].tags[0];
-        chai.request(server)
-            .get(`/tools?tags=${tag}`)
-            .end((err, response) => {
-                if (err) return done(err);
-
-                response.should.have.status(200);
-                response.should.be.json;
-                response.body.should.be.an("array").and.have.lengthOf(1)
-
-                // cada ferramenta deve ter todas as propriedades
-                response.body.should.all.have.keys("_id", "title", "description", "link", "tags");
-                let eqTool = tools[0];
-                response.body[0].title.should.equal(eqTool.title);
-                response.body[0].link.should.equal(eqTool.link);
-                response.body[0].description.should.equal(eqTool.description);
-                response.body[0].tags.should.include.members(eqTool.tags);
-                done();
-            });
-
-    });
-
-    it("Atualiza a descricao de uma ferramenta usando PUT /tools/:id", done => {
-        const testUpdate = (id) => {
-            const newDescription = "A new description";
-            chai.request(server)
-                .put(`/tools/${id}`)
-                .send({ "description": newDescription })
-                .end((err, response) => {
-                    if (err) return done(err);
-
-                    response.should.have.status(200);
-                    response.should.be.json;
-                    response.body.should.all.have.keys("_id", "title", "description", "link", "tags");
-                    response.body.description.should.equal(newDescription);
-                    done();
-                });
-        };
-
-        chai.request(server)
-            .get("/tools")
-            .end((err, response) => {
-                if (err) return done(err);
-
-                response.should.have.status(200);
-                response.should.be.json;
-                response.body.should.be.an("array").and.have.lengthOf(2);
-                response.body.should.all.have.keys("_id", "title", "description", "link", "tags");
+                response.body.forEach(tool => tool.should.have.all.keys("_id", "title", "description", "link", "tags"));
                 return Promise.resolve(response.body[0]._id);
-            }).then(testUpdate);
+            }).then(id => {
+                const newDescription = "A new description";
+                chai.request(server)
+                    .put(`/tools/${id}`)
+                    .send({ "description": newDescription })
+                    .end((err, response) => {
+                        if (err) return done(err);
+
+                        response.should.have.status(200);
+                        response.should.be.json;
+                        response.body.should.have.all.keys("_id", "title", "description", "link", "tags");
+                        response.body.description.should.equal(newDescription);
+                    });
+            }).catch(done);
     });
 
     it("Remove uma ferramenta usando DELETE /tools/:id", done => {
