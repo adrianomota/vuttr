@@ -13,7 +13,7 @@ module.exports.create = function (req, res) {
     let newTool = new Tool(req.body);
     newTool.save(function (err) {
         if (err) return handleError(res, err, 400);
-        res.status(200).json(newTool);
+        res.status(201).json(newTool);
     });
 };
 

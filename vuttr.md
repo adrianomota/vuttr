@@ -1,0 +1,168 @@
+FORMAT: 1A
+
+# VUTTR
+
+VUTTR (Very Useful Tools to Remember) é uma simples API para gerenciar uma lista de ferramentas.
+
+## Group Tools
+
+Documentos/Objetos representando as ferramentas a serem gerenciadas.
+
+## Coleção de Tools [/tools]
+
+### Lista todas as ferramentas [GET]
+
+Lista todas as ferramentas cadastradas.
+
++ Response 200 (application/json)
+    [
+        {
+            "id": 1,
+            "title": "Notion",
+            "link": "<https://notion.so>",
+            "description": "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized. ",
+            "tags": [
+                "organization",
+                "planning",
+                "collaboration",
+                "writing",
+                "calendar"
+            ]
+        },
+        {
+            "id": 2,
+            "title": "json-server",
+            "link": "<https://github.com/typicode/json-server>",
+            "description": "Fake REST API based on a json schema. Useful for mocking and creating APIs for front-end devs to consume in coding challenges.",
+            "tags": [
+                "api",
+                "json",
+                "schema",
+                "node",
+                "github",
+                "rest"
+            ]
+        },
+        {
+            "id": 3,
+            "title": "fastify",
+            "link": "<https://www.fastify.io/>",
+            "description": "Extremely fast and simple, low-overhead web framework for NodeJS. Supports HTTP2.",
+            "tags": [
+                "web",
+                "framework",
+                "node",
+                "http2",
+                "https",
+                "localhost"
+            ]
+        }
+    ]
+
+### Cadastra uma nova ferramenta [POST]
+
+O corpo da requisição deve conter as informações da ferramenta a ser cadastrada, sem o ID (gerado automaticamente pelo servidor). A resposta, em caso de sucesso, é o mesmo objeto, com seu novo ID gerado.
+
++ title (string) - O título da ferramenta
++ link (string) - O link da ferramenta
++ description (string) - A descrição da ferramenta
++ tags  (array[string]) - As tags relacionadas à ferramenta
+
++ Request (application/json)
+    {
+        "title": "hotel",
+        "link": "<https://github.com/typicode/hotel>",
+        "description": "Local app manager. Start apps within your browser, developer tool with local .localhost domain and https out of the box.",
+        "tags":["node", "organizing", "webapps", "domain", "developer", "https", "proxy"]
+    }
+
++ Response 201
+    + Body
+        {
+            "id": "4",
+            "title": "hotel",
+            "link": "<https://github.com/typicode/hotel>",
+            "description": "Local app manager. Start apps within your browser, developer tool with local .localhost domain and https out of the box.",
+            "tags":["node", "organizing", "webapps", "domain", "developer", "https", "proxy"]
+        }
+
+## Coleção de Tools [/tools?tag=alguma]
+
+### Filtra as ferramentas por tags [GET]
+
+Filtra ferramentas pelas tags cadastradas
+
++ Parameters
+    + tag: (string) - A tag a ser buscada
+
++ Response 200 (application/json)
+    [
+        {
+            "id": 2,
+            "title": "json-server",
+            "link": "<https://github.com/typicode/json-server>",
+            "description": "Fake REST API based on a json schema. Useful for mocking and creating APIs for front-end devs to consume in coding challenges.",
+            "tags": [
+                "api",
+                "json",
+                "schema",
+                "node",
+                "github",
+                "rest"
+            ]
+        },
+        {
+            "id": 3,
+            "title": "fastify",
+            "link": "<https://www.fastify.io/>",
+            "description": "Extremely fast and simple, low-overhead web framework for NodeJS. Supports HTTP2.",
+            "tags": [
+                "web",
+                "framework",
+                "node",
+                "http2",
+                "https",
+                "localhost"
+            ]
+        }
+    ]
+
+## Coleção de Tools [/tools/{id}]
+
+### Atualiza as informações de uma ferramenta [PUT]
+
+O corpo da requisição deve conter as informações da ferramenta a ser cadastrada. A resposta, em caso de sucesso, é o mesmo objeto, com seu as informações atualizadas.
+
++ Parameters
+    + id (string) - O id da ferramenta a ser editada
+
++ title (string) - O novo título da ferramenta  - [opcional]
++ link (string) - O novo link da ferramenta - [opcional]
++ description (string) - A nova descrição da ferramenta - [opcional]
++ tags  (array[string]) - As novas tags relacionadas à ferramenta - [opcional]
+
++ Request (application/json)
+    {
+        "title": "hotel",
+        "link": "<https://github.com/typicode/hotel>",
+        "description": "Local app manager. Start apps within your browser, developer tool with local .localhost domain and https out of the box.",
+        "tags":["node", "organizing", "webapps", "domain", "developer", "https", "proxy"]
+    }
+
++ Response 201
+    + Body
+        {
+            "id": "4",
+            "title": "hotel",
+            "link": "<https://github.com/typicode/hotel>",
+            "description": "Local app manager. Start apps within your browser, developer tool with local .localhost domain and https out of the box.",
+            "tags":["node", "organizing", "webapps", "domain", "developer", "https", "proxy"]
+        }
+
+### Remove uma ferramenta [DELETE]
+
++ Parameters
+
+    + id (string) - O id da ferramenta a ser deletada
+
++ Response 200
