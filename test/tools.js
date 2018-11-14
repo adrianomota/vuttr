@@ -128,7 +128,7 @@ describe("Tools - API test: ", function () {
             .end((err, response) => {
                 if (err) return done(err);
 
-                response.should.have.status(200).and.be.json;
+                response.should.have.status(201).and.be.json;
                 response.body.should.have.keys("_id", "title", "description", "link", "tags");
 
                 // nova ferramenta deve ter uma propriedade id

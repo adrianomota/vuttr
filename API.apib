@@ -8,7 +8,7 @@ VUTTR (Very Useful Tools to Remember) é uma simples API para gerenciar uma list
 
 Documentos/Objetos representando as ferramentas a serem gerenciadas.
 
-## Coleção de Tools [/tools]
+## Coleção de tools [/tools]
 
 ### Lista todas as ferramentas [GET]
 
@@ -86,9 +86,7 @@ O corpo da requisição deve conter as informações da ferramenta a ser cadastr
             "tags":["node", "organizing", "webapps", "domain", "developer", "https", "proxy"]
         }
 
-## Coleção de Tools [/tools?tag=alguma]
-
-### Filtra as ferramentas por tags [GET]
+### Filtra as ferramentas por tags [GET /tools?tag=alguma]
 
 Filtra ferramentas pelas tags cadastradas
 
@@ -127,9 +125,7 @@ Filtra ferramentas pelas tags cadastradas
         }
     ]
 
-## Coleção de Tools [/tools/{id}]
-
-### Atualiza as informações de uma ferramenta [PUT]
+### Atualiza as informações de uma ferramenta [PUT /tools/{id}]
 
 O corpo da requisição deve conter as informações da ferramenta a ser cadastrada. A resposta, em caso de sucesso, é o mesmo objeto, com seu as informações atualizadas.
 
@@ -159,10 +155,13 @@ O corpo da requisição deve conter as informações da ferramenta a ser cadastr
             "tags":["node", "organizing", "webapps", "domain", "developer", "https", "proxy"]
         }
 
-### Remove uma ferramenta [DELETE]
+### Remove uma ferramenta [DELETE /tools/{id}]
 
 + Parameters
 
     + id (string) - O id da ferramenta a ser deletada
 
 + Response 200
+    
+    + Body
+        {}
