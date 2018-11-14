@@ -9,7 +9,6 @@ services:
         build:
             dockerfile: ./docker/server.dockerfile
             context: .
-        image: fabioc/vuttr
         networks:
             - mynet
         ports:

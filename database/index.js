@@ -18,14 +18,18 @@ if (process.env.NODE_ENV === "test") {
 // Aperte os cintos, estamos em produção...
 if (process.env.NODE_ENV === "production") {
     url = `${config.productionHost}/${config.database}`
-    opts.user = config.user
-    opts.pass = config.pass
+    if (config.user !== "")
+        opts.user = config.user;
+    if (config.pass !== "")
+        opts.pass = config.pass;
 }
 
 // conecta ao mongo via mongoose
 mongoose.connect(url, opts);
 
-// schema de uma ferramenta
+// schemas
 const Tools = require("./schemas/tools");
+const Users = require("./schemas/users");
 
 module.exports.Tools = Tools;
+module.exports.Users = Users;
