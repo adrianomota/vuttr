@@ -57,7 +57,8 @@ describe("Tools - API test: ", function () {
     beforeEach(async function () {
         let count = await Tool.countDocuments();
         await ((count > 0) ? Tool.collection.drop() : Promise.resolve());
-        await Tool.create(tools);
+        await Tool._resetCount(); // reseta contador auto-incremental dos ids
+        await Tool.create(tools); // fixtures das 3 ferramentas acima para testes
     });
 
     it("Lista as ferramentas usando GET /tools", done => {
@@ -71,7 +72,7 @@ describe("Tools - API test: ", function () {
 
                 // cada ferramenta deve ter uma propriedade id
                 response.body.forEach(tool => {
-                    tool.should.have.all.keys("_id", "title", "description", "link", "tags");
+                    tool.should.have.all.keys("id", "title", "description", "link", "tags");
                     // acha nas variavel de ferramentas salvas a equivalente do resultado
                     let eqTool = tools.find(u => u.title === tool.title);
                     // testa se titulos sao iguais
@@ -98,7 +99,7 @@ describe("Tools - API test: ", function () {
                 response.body.should.be.an("array").and.have.lengthOf(1)
 
                 // cada ferramenta deve ter todas as propriedades
-                response.body[0].should.have.all.keys("_id", "title", "description", "link", "tags");
+                response.body[0].should.have.all.keys("id", "title", "description", "link", "tags");
                 let eqTool = tools.find(t => t.tags.includes('fake'));
                 response.body[0].title.should.equal(eqTool.title);
                 response.body[0].link.should.equal(eqTool.link);
@@ -129,10 +130,10 @@ describe("Tools - API test: ", function () {
                 if (err) return done(err);
 
                 response.should.have.status(201).and.be.json;
-                response.body.should.have.keys("_id", "title", "description", "link", "tags");
+                response.body.should.have.keys("id", "title", "description", "link", "tags");
 
                 // nova ferramenta deve ter uma propriedade id
-                response.body._id.should.be.an("string");
+                response.body.id.should.be.an("number");
 
                 response.body.title.should.equal(newTool.title);
                 response.body.link.should.equal(newTool.link);
@@ -150,8 +151,8 @@ describe("Tools - API test: ", function () {
             .then(response => {
                 response.should.have.status(200);
                 response.should.be.json;
-                response.body.forEach(tool => tool.should.have.all.keys("_id", "title", "description", "link", "tags"));
-                return Promise.resolve(response.body[0]._id);
+                response.body.forEach(tool => tool.should.have.all.keys("id", "title", "description", "link", "tags"));
+                return Promise.resolve(response.body[0].id);
             }).then(id => {
                 const newDescription = "A new description";
                 chai.request(server)
@@ -161,7 +162,7 @@ describe("Tools - API test: ", function () {
                         if (err) return done(err);
 
                         response.should.have.status(200).and.be.json;
-                        response.body.should.have.all.keys("_id", "title", "description", "link", "tags");
+                        response.body.should.have.all.keys("id", "title", "description", "link", "tags");
                         response.body.description.should.equal(newDescription);
                         done();
                     });
@@ -177,8 +178,8 @@ describe("Tools - API test: ", function () {
                 response.body.should.be.an("array")
                     .and.have.lengthOf(tools.length);
                 response.body.forEach(tool =>
-                    tool.should.have.all.keys("_id", "title", "description", "link", "tags"));
-                return Promise.resolve(response.body[0]._id);
+                    tool.should.have.all.keys("id", "title", "description", "link", "tags"));
+                return Promise.resolve(response.body[0].id);
             }).then(id => {
                 chai.request(server)
                     .delete(`/tools/${id}`)

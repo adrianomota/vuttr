@@ -18,8 +18,8 @@ const checkPassword = res => ([comparison, user]) => {
     }
 };
 
-const handleError = (req, res) => (err) => {
-    console.err(err.name || err.message);
+const handleError = (res) => (err) => {
+    console.error(err.name || err.message);
     return res.status(err.code || 500).json({
         error: err.name,
         message: err.message
@@ -34,7 +34,7 @@ module.exports.login = (req, res) => {
         })
         .then(checkPassword(res))
         .then((res) => res.status(200).json(success))
-        .catch(handleError(req, res));
+        .catch(handleError(res));
 };
 
 module.exports.isAuthenticated = (req, res, next) => {

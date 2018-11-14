@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "mocha -b --exit test/",
-    "dev": "NODE_ENV=development node server.js",
+    "dev": "NODE_ENV=development nodemon server.js",
     "start": "NODE_ENV=production node server.js"
   },
   "repository": {
@@ -29,6 +29,7 @@
     "express": "^4.16.4",
     "jsonwebtoken": "^8.3.0",
     "mongoose": "^5.3.11",
+    "mongoose-auto-increment-reworked": "^1.2.1",
     "morgan": "^1.9.1",
     "validator": "^10.9.0"
   },
@@ -36,6 +37,7 @@
     "chai": "^4.2.0",
     "chai-http": "^4.2.0",
     "chaid": "^1.0.2",
-    "mocha": "^5.2.0"
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.6"
   }
 }
