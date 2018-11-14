@@ -1,0 +1,22 @@
+version: '3'
+services:
+    mongodb:
+        image: mongo
+        container_name: mongodb
+        networks:
+            - mynet
+    server:
+        build:
+            dockerfile: ./docker/server.dockerfile
+            context: .
+        image: fabioc/vuttr
+        networks:
+            - mynet
+        ports:
+            - "3000"
+        depends_on:
+            - "mongodb"
+
+networks:
+    mynet:
+        driver: bridge

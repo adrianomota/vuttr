@@ -173,3 +173,45 @@ A resposta, em caso de sucesso, é o mesmo objeto, com as informações atualiza
     "tags":["node", "organizing", "webapps", "domain", "developer", "https", "proxy"]
 }
 ```
+
+## Configuração e uso
+
+### Instalação
+
+```bash
+git clone https://github.com/fabiocba/vuttr.git
+cd vuttr \
+npm install
+```
+
+### Execução local
+
+```bash
+npm run dev
+```
+
+### Testes
+
+```bash
+npm test
+```
+
+### Docker
+
+#### Build & preparacao para deploy (via docker)
+
+(Opcional)
+
+Necessário estar logado com uma conta docker
+
+```bash
+docker build -f docker/server.dockerfile -t fabiocba/vuttr .
+docker push fabiocba/vuttr
+```
+
+#### Iniciar containers (aplicação + mongo)
+
+```bash
+docker pull fabiocba/vuttr
+docker-compose up
+```
