@@ -31,7 +31,7 @@ module.exports.retrieve = function (req, res) {
 module.exports.update = function (req, res) {
     let tool = req.body;
     let id = req.params.id;
-    Tool.findOneAndUpdate(id, { $set: tool }, { new: true }, function (err, tool) {
+    Tool.findByIdAndUpdate(id, { $set: tool }, { new: true }, function (err, tool) {
         if (err) return handleError(res, err, 400);
         res.status(200).json(tool);
     });
@@ -39,8 +39,7 @@ module.exports.update = function (req, res) {
 
 module.exports.remove = function (req, res) {
     let id = req.params.id;
-    console.log(id);
-    Tool.findOneAndRemove(req.params.id, function (err) {
+    Tool.findByIdAndDelete(id, function (err) {
         if (err) return handleError(res, err, 400);
         res.status(200).json({});
     });

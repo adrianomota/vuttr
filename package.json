@@ -4,7 +4,7 @@
   "description": "API e banco de dados para a aplicação VUTTR (Very Useful Tools to Remember). A aplicação é um simples repositório para gerenciar ferramentas com seus respectivos nomes, links, descrições e tags.",
   "main": "server.js",
   "scripts": {
-    "test": "mocha -b test/",
+    "test": "mocha -b --exit test/",
     "start": "NODE_ENV=test node server.js"
   },
   "repository": {

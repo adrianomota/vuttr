@@ -3,11 +3,11 @@ process.env.NODE_ENV = "test";
 const chai = require("chai");
 const chaiHttp = require("chai-http");
 const chaid = require("chaid");
-const should = chai.should();
 
 const server = require("../server");
 const Tool = require("../database").Tools;
 
+chai.should();
 chai.use(chaiHttp);
 chai.use(chaid);
 
@@ -67,7 +67,6 @@ describe("Tools - API test: ", function () {
                 if (err) return done(err);
 
                 response.should.have.status(200);
-                response.should.be.json;
                 response.body.should.be.an("array").and.have.lengthOf(tools.length)
 
                 // cada ferramenta deve ter uma propriedade id
@@ -95,8 +94,7 @@ describe("Tools - API test: ", function () {
             .end((err, response) => {
                 if (err) return done(err);
 
-                response.should.have.status(200);
-                response.should.be.json;
+                response.should.have.status(200).and.be.json;
                 response.body.should.be.an("array").and.have.lengthOf(1)
 
                 // cada ferramenta deve ter todas as propriedades
@@ -130,8 +128,7 @@ describe("Tools - API test: ", function () {
             .end((err, response) => {
                 if (err) return done(err);
 
-                response.should.have.status(200);
-                response.should.be.json;
+                response.should.have.status(200).and.be.json;
                 response.body.should.have.keys("_id", "title", "description", "link", "tags");
 
                 // nova ferramenta deve ter uma propriedade id
@@ -147,7 +144,7 @@ describe("Tools - API test: ", function () {
             });
     });
 
-    it("Atualiza a descricao de uma ferramenta usando PUT /tools/:id", async done => {
+    it("Atualiza a descricao de uma ferramenta usando PUT /tools/:id", done => {
         chai.request(server)
             .get("/tools")
             .then(response => {
@@ -163,39 +160,35 @@ describe("Tools - API test: ", function () {
                     .end((err, response) => {
                         if (err) return done(err);
 
-                        response.should.have.status(200);
-                        response.should.be.json;
+                        response.should.have.status(200).and.be.json;
                         response.body.should.have.all.keys("_id", "title", "description", "link", "tags");
                         response.body.description.should.equal(newDescription);
+                        done();
                     });
             }).catch(done);
     });
 
     it("Remove uma ferramenta usando DELETE /tools/:id", done => {
-        const testDelete = (id) => {
-            chai.request(server)
-                .delete(`/tools/${id}`)
-                .end((err, response) => {
-                    if (err) return done(err);
-
-                    response.should.have.status(200);
-                    response.should.be.json.and.empty;
-                    done();
-                });
-        };
-
         chai.request(server)
             .get("/tools")
-            .end((err, response) => {
-                if (err) return done(err);
-
+            .then(response => {
                 response.should.have.status(200);
                 response.should.be.json;
-                response.body
-                    .should.be.an("array")
-                    .and.have.lengthOf(2)
-                    .and.all.have.keys("_id", "title", "description", "link", "tags");
+                response.body.should.be.an("array")
+                    .and.have.lengthOf(tools.length);
+                response.body.forEach(tool =>
+                    tool.should.have.all.keys("_id", "title", "description", "link", "tags"));
                 return Promise.resolve(response.body[0]._id);
-            }).then(testDelete);
+            }).then(id => {
+                chai.request(server)
+                    .delete(`/tools/${id}`)
+                    .end((err, response) => {
+                        if (err) return done(err);
+
+                        response.should.have.status(200).and.be.json
+                        response.body.should.be.empty;
+                        done();
+                    });
+            }).catch(done);
     });
 });
