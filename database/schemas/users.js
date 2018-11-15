@@ -10,11 +10,18 @@ const crypt = (v) => bcrypt.hashSync(v, bcrypt.genSaltSync(10), null);
 // schema de um usuario
 var usuarioSchema = new Schema({
     name: { type: String, required: true },
-    email: { type: String, required: true, unique: true, trim: true, lowercase: true, validate: [isEmail, "E-mail inválido"] },
+    email: { 
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        lowercase: true,
+        validate: [isEmail, "E-mail inválido"] 
+    },
     password: { type: String, required: true, set: crypt },
 });
 
-// helper de verificacao de senha
+// helper de verificacao de senha usando bcrypt configurado acima
 usuarioSchema.methods.comparePassword = function (triedPassword) {
     return bcrypt.compare(triedPassword, this.password);
 };

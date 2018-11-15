@@ -11,6 +11,7 @@ chai.should();
 chai.use(chaiHttp);
 chai.use(chaid);
 
+// fixtures
 let tools = [
     {
         "title": "fake-tool",
@@ -47,6 +48,7 @@ let tools = [
         ]
     }
 ];
+let _token;
 
 /**
  * Teste dos endpoint da API.
@@ -56,7 +58,7 @@ describe("Tools - API test: ", function () {
     // executa drop da coleçao do banco
     beforeEach(async function () {
         let count = await Tool.countDocuments();
-        await ((count > 0) ? Tool.collection.drop() : Promise.resolve());
+        (count > 0) ? await Tool.collection.drop() : Promise.resolve();
         await Tool._resetCount(); // reseta contador auto-incremental dos ids
         await Tool.create(tools); // fixtures das 3 ferramentas acima para testes
     });
@@ -99,18 +101,36 @@ describe("Tools - API test: ", function () {
                 response.body.should.be.an("array").and.have.lengthOf(1)
 
                 // cada ferramenta deve ter todas as propriedades
-                response.body[0].should.have.all.keys("id", "title", "description", "link", "tags");
-                let eqTool = tools.find(t => t.tags.includes('fake'));
-                response.body[0].title.should.equal(eqTool.title);
-                response.body[0].link.should.equal(eqTool.link);
-                response.body[0].description.should.equal(eqTool.description);
-                response.body[0].tags.should.include.members(eqTool.tags);
+                response.body.forEach(tool => {
+                    tool.should.have.all.keys("id", "title", "description", "link", "tags");
+                    let eqTool = tools.find(t => t.tags.includes('fake'));
+                    tool.title.should.equal(eqTool.title);
+                    tool.link.should.equal(eqTool.link);
+                    tool.description.should.equal(eqTool.description);
+                    tool.tags.should.include.members(eqTool.tags);
+                });
                 done();
             });
+    });
 
+    it("Faz login usando endpoint POST /login", done => {
+        chai.request(server)
+            .post("/login")
+            .send(require("../config/login"))
+            .end((err, response) => {
+                if (err) done(err);
+
+                response.should.have.status(200);
+                response.body.should.have.any.keys(["token"]);
+                response.headers.should.have.property("authorization");
+                response.headers.authorization.should.be.a("string");
+                _token = response.headers.authorization.split(" ")[1];
+                done();
+            });
     });
 
     it("Cadastra uma ferramenta usando POST /tools", done => {
+        // dados da ferramenta para enviar no corpo da requisicao
         let newTool = {
             "title": "Notion",
             "link": "<https://notion.so>",
@@ -125,6 +145,7 @@ describe("Tools - API test: ", function () {
         };
         chai.request(server)
             .post("/tools")
+            .set("Authorization", `Bearer ${_token}`) // token de autorizacao
             .send(newTool)
             .end((err, response) => {
                 if (err) return done(err);
@@ -151,18 +172,23 @@ describe("Tools - API test: ", function () {
             .then(response => {
                 response.should.have.status(200);
                 response.should.be.json;
-                response.body.forEach(tool => tool.should.have.all.keys("id", "title", "description", "link", "tags"));
+                response.body.should.be.an("array")
+                    .and.have.lengthOf(tools.length);
+                response.body.forEach(tool =>
+                    tool.should.have.all.keys("id", "title", "description", "link", "tags"));
                 return Promise.resolve(response.body[0].id);
             }).then(id => {
                 const newDescription = "A new description";
                 chai.request(server)
                     .put(`/tools/${id}`)
-                    .send({ "description": newDescription })
+                    .set("Authorization", `Bearer ${_token}`) // token de autorizacao
+                    .send({ "description": newDescription }) // corpo do PUT com nova descricao
                     .end((err, response) => {
                         if (err) return done(err);
 
                         response.should.have.status(200).and.be.json;
                         response.body.should.have.all.keys("id", "title", "description", "link", "tags");
+                        // descricao deve ser igual a nova descricao enviada
                         response.body.description.should.equal(newDescription);
                         done();
                     });
@@ -183,11 +209,37 @@ describe("Tools - API test: ", function () {
             }).then(id => {
                 chai.request(server)
                     .delete(`/tools/${id}`)
+                    .set("Authorization", `Bearer ${_token}`) // token de autorizacao
                     .end((err, response) => {
                         if (err) return done(err);
 
-                        response.should.have.status(200).and.be.json
+                        response.should.have.status(200).and.be.json;
                         response.body.should.be.empty;
+                        done();
+                    });
+            }).catch(done);
+    });
+
+    it("Não remove uma ferramenta sem token de autorizacao em DELETE /tools/:id", done => {
+        chai.request(server)
+            .get("/tools")
+            .then(response => {
+                response.should.have.status(200);
+                response.should.be.json;
+                response.body.should.be.an("array")
+                    .and.have.lengthOf(tools.length);
+                response.body.forEach(tool =>
+                    tool.should.have.all.keys("id", "title", "description", "link", "tags"));
+                return Promise.resolve(response.body[0].id);
+            }).then(id => {
+                // nao define token de autorizacao
+                chai.request(server)
+                    .delete(`/tools/${id}`)
+                    .end((err, response) => {
+                        if (err) return done(err);
+
+                        // acao nao autorizada - bad request 400
+                        response.should.have.status(400).and.be.json
                         done();
                     });
             }).catch(done);

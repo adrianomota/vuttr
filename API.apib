@@ -15,153 +15,208 @@ Documentos/Objetos representando as ferramentas a serem gerenciadas.
 Lista todas as ferramentas cadastradas.
 
 + Response 200 (application/json)
-    [
-        {
-            "id": 1,
-            "title": "Notion",
-            "link": "<https://notion.so>",
-            "description": "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized. ",
-            "tags": [
-                "organization",
-                "planning",
-                "collaboration",
-                "writing",
-                "calendar"
-            ]
-        },
-        {
-            "id": 2,
-            "title": "json-server",
-            "link": "<https://github.com/typicode/json-server>",
-            "description": "Fake REST API based on a json schema. Useful for mocking and creating APIs for front-end devs to consume in coding challenges.",
-            "tags": [
-                "api",
-                "json",
-                "schema",
-                "node",
-                "github",
-                "rest"
-            ]
-        },
-        {
-            "id": 3,
-            "title": "fastify",
-            "link": "<https://www.fastify.io/>",
-            "description": "Extremely fast and simple, low-overhead web framework for NodeJS. Supports HTTP2.",
-            "tags": [
-                "web",
-                "framework",
-                "node",
-                "http2",
-                "https",
-                "localhost"
-            ]
-        }
-    ]
+
+        [
+            {
+                "id": 1,
+                "title": "Notion",
+                "link": "<https://notion.so>",
+                "description": "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized. ",
+                "tags": [
+                    "organization",
+                    "planning",
+                    "collaboration",
+                    "writing",
+                    "calendar"
+                ]
+            },
+            {
+                "id": 2,
+                "title": "json-server",
+                "link": "<https://github.com/typicode/json-server>",
+                "description": "Fake REST API based on a json schema. Useful for mocking and creating APIs for front-end devs to consume in coding challenges.",
+                "tags": [
+                    "api",
+                    "json",
+                    "schema",
+                    "node",
+                    "github",
+                    "rest"
+                ]
+            },
+            {
+                "id": 3,
+                "title": "fastify",
+                "link": "<https://www.fastify.io/>",
+                "description": "Extremely fast and simple, low-overhead web framework for NodeJS. Supports HTTP2.",
+                "tags": [
+                    "web",
+                    "framework",
+                    "node",
+                    "http2",
+                    "https",
+                    "localhost"
+                ]
+            }
+        ]
+
+### Filtra as ferramentas por tags [GET /tools{?tag}]
+
+Filtra ferramentas pelas tags cadastradas
+
++ Parameters
+
+    + tag (string) - A tag a ser buscada
+
++ Response 200 (application/json)
+
+        [
+            {
+                "id": 2,
+                "title": "json-server",
+                "link": "<https://github.com/typicode/json-server>",
+                "description": "Fake REST API based on a json schema. Useful for mocking and creating APIs for front-end devs to consume in coding challenges.",
+                "tags": [
+                    "api",
+                    "json",
+                    "schema",
+                    "node",
+                    "github",
+                    "rest"
+                ]
+            },
+            {
+                "id": 3,
+                "title": "fastify",
+                "link": "<https://www.fastify.io/>",
+                "description": "Extremely fast and simple, low-overhead web framework for NodeJS. Supports HTTP2.",
+                "tags": [
+                    "web",
+                    "framework",
+                    "node",
+                    "http2",
+                    "https",
+                    "localhost"
+                ]
+            }
+        ]
 
 ### Cadastra uma nova ferramenta [POST]
 
 O corpo da requisição deve conter as informações da ferramenta a ser cadastrada, sem o ID (gerado automaticamente pelo servidor). A resposta, em caso de sucesso, é o mesmo objeto, com seu novo ID gerado.
 
-+ title (string) - O título da ferramenta
-+ link (string) - O link da ferramenta
-+ description (string) - A descrição da ferramenta
-+ tags  (array[string]) - As tags relacionadas à ferramenta
-
-+ Request (application/json)
-    {
-        "title": "hotel",
-        "link": "<https://github.com/typicode/hotel>",
-        "description": "Local app manager. Start apps within your browser, developer tool with local .localhost domain and https out of the box.",
-        "tags":["node", "organizing", "webapps", "domain", "developer", "https", "proxy"]
-    }
-
-+ Response 201
-    + Body
-        {
-            "id": "4",
-            "title": "hotel",
-            "link": "<https://github.com/typicode/hotel>",
-            "description": "Local app manager. Start apps within your browser, developer tool with local .localhost domain and https out of the box.",
-            "tags":["node", "organizing", "webapps", "domain", "developer", "https", "proxy"]
-        }
-
-### Filtra as ferramentas por tags [GET /tools?tag=alguma]
-
-Filtra ferramentas pelas tags cadastradas
+O cabecalho da requisição deve conter um campo Authorization com valor token Bearer.
 
 + Parameters
-    + tag: (string) - A tag a ser buscada
+    + title (string) - O título da ferramenta
+    + link (string) - O link da ferramenta
+    + description (string) - A descrição da ferramenta
+    + tags  (array[string]) - As tags relacionadas à ferramenta
 
-+ Response 200 (application/json)
-    [
-        {
-            "id": 2,
-            "title": "json-server",
-            "link": "<https://github.com/typicode/json-server>",
-            "description": "Fake REST API based on a json schema. Useful for mocking and creating APIs for front-end devs to consume in coding challenges.",
-            "tags": [
-                "api",
-                "json",
-                "schema",
-                "node",
-                "github",
-                "rest"
-            ]
-        },
-        {
-            "id": 3,
-            "title": "fastify",
-            "link": "<https://www.fastify.io/>",
-            "description": "Extremely fast and simple, low-overhead web framework for NodeJS. Supports HTTP2.",
-            "tags": [
-                "web",
-                "framework",
-                "node",
-                "http2",
-                "https",
-                "localhost"
-            ]
-        }
-    ]
++ Request JSON Message
+
+    + Headers
+
+            Authorization: Bearer
+            Accept: application/json
+
++ Response 201 (application/json)
+
+    + Body
+
+            {
+                "id": "4",
+                "title": "hotel",
+                "link": "<https://github.com/typicode/hotel>",
+                "description": "Local app manager. Start apps within your browser, developer tool with local .localhost domain and https out of the box.",
+                "tags":["node", "organizing", "webapps", "domain", "developer", "https", "proxy"]
+            }
+
 
 ### Atualiza as informações de uma ferramenta [PUT /tools/{id}]
 
 O corpo da requisição deve conter as informações da ferramenta a ser cadastrada. A resposta, em caso de sucesso, é o mesmo objeto, com seu as informações atualizadas.
 
+O cabecalho da requisição deve conter um campo Authorization com valor token Bearer.
+
 + Parameters
     + id (string) - O id da ferramenta a ser editada
+    + title (string) - O novo título da ferramenta  - [opcional]
+    + link (string) - O novo link da ferramenta - [opcional]
+    + description (string) - A nova descrição da ferramenta - [opcional]
+    + tags  (array[string]) - As novas tags relacionadas à ferramenta - [opcional]
 
-+ title (string) - O novo título da ferramenta  - [opcional]
-+ link (string) - O novo link da ferramenta - [opcional]
-+ description (string) - A nova descrição da ferramenta - [opcional]
-+ tags  (array[string]) - As novas tags relacionadas à ferramenta - [opcional]
++ Request JSON Message
 
-+ Request (application/json)
-    {
-        "title": "hotel",
-        "link": "<https://github.com/typicode/hotel>",
-        "description": "Local app manager. Start apps within your browser, developer tool with local .localhost domain and https out of the box.",
-        "tags":["node", "organizing", "webapps", "domain", "developer", "https", "proxy"]
-    }
+    + Headers
 
-+ Response 201
+            Authorization: Bearer
+            Accept: application/json
+
++ Response 200 (application/json)
+
     + Body
-        {
-            "id": "4",
-            "title": "hotel",
-            "link": "<https://github.com/typicode/hotel>",
-            "description": "Local app manager. Start apps within your browser, developer tool with local .localhost domain and https out of the box.",
-            "tags":["node", "organizing", "webapps", "domain", "developer", "https", "proxy"]
-        }
+    
+            {
+                "id": "4",
+                "title": "hotel",
+                "link": "<https://github.com/typicode/hotel>",
+                "description": "Local app manager. Start apps within your browser, developer tool with local .localhost domain and https out of the box.",
+                "tags":["node", "organizing", "webapps", "domain", "developer", "https", "proxy"]
+            }
 
 ### Remove uma ferramenta [DELETE /tools/{id}]
+
+Remove uma ferramenta através de seu id.
+
+O cabecalho da requisição deve conter um campo Authorization com valor token Bearer.
 
 + Parameters
 
     + id (string) - O id da ferramenta a ser deletada
 
++ Request JSON Message
+
+    + Headers
+
+            Authorization: Bearer
+            Accept: application/json
+
 + Response 200
     
     + Body
-        {}
+
+            {}
+
+
+## Autorizacao [/login]
+
+### Realiza login [POST]
+
+Realiza login com email e senha previamente cadastrados.
+
+O corpo da requisição deve conter as email e senha do usuario.
+
++ Parameters
+
+    + email (string) - O email do usuario
+    + password (string) - A senha do usuario
+
++ Request JSON Message
+
+    + Headers
+
+            Accept: application/json
+
++ Response 200 (application/json)
+
+    + Headers
+
+            Authorization: Bearer
+
+    + Body
+
+            {
+                "message" : "Authenticated!",
+                "token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViZWM4OWRiY2I1M2RhMGNkNjU1OWU3NyIsImlhdCI6MTU0MjIzNTQwMywiZXhwIjoxNTQyNDk0NjAzfQ.DmVlMI24E-37P2m5JAgZCWEY2laMQZe-efnzIUT0M7c"
+            }

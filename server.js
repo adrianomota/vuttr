@@ -10,6 +10,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 // parse content-type - application/json
 app.use(bodyParser.json())
 
+// ignora logger nos testes automatizados 
 process.env.NODE_ENV !== "test"
     && app.use(logger(':date[web] :method :url :status :response-time ms - :res[content-length]'));
 
